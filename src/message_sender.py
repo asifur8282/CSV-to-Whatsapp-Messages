@@ -24,6 +24,10 @@ class MessageSender:
             recipients: List of phone numbers
             message: The message to send
         """
+        # Reset counters for the current batch
+        self.successful_sends = 0
+        self.failed_sends = 0
+
         # Initialize bot
         if not self.bot.initialize_driver():
             print("\n❌ Failed to initialize bot. Exiting...")
@@ -47,6 +51,7 @@ class MessageSender:
             total = len(recipients)
             
             # Send messages to each recipient
+            import random
             for index, recipient in enumerate(recipients, 1):
                 print(f"\n{'='*60}")
                 print(f"📨 Sending to recipient {index}/{total}: {recipient}")
@@ -59,8 +64,9 @@ class MessageSender:
                 
                 # Wait between messages to avoid rate limiting
                 if index < total:
-                    print(f"⏳ Waiting before next message...")
-                    time.sleep(3)
+                    delay = random.randint(10, 20)
+                    print(f"⏳ Waiting for {delay} seconds before the next message to mimic human behavior...")
+                    time.sleep(delay)
             
             # Print summary
             self._print_summary(total)
@@ -72,10 +78,10 @@ class MessageSender:
         except Exception as e:
             print(f"\n❌ Unexpected error: {str(e)}")
             self._print_summary(len(recipients))
-        
-        finally:
-            # Close browser
-            self.bot.close_driver()
+            
+    def close(self) -> None:
+        """Close the browser session"""
+        self.bot.close_driver()
     
     def _send_to_recipient(self, phone_number: str, message: str) -> bool:
         """
