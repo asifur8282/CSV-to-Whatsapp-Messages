@@ -38,8 +38,8 @@ chromedriver.exe
 # Project specific
 .env
 config.ini
-test_numbers.xlsx
-test_numbers.csv
+*.xlsx
+*.csv
 
 # Logs
 *.log
