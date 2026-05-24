@@ -1,7 +1,5 @@
 # 🚀 WhatsApp AutoMessenger - Complete Project
 
-Your WhatsApp automation tool is ready! Here's what has been created:
-
 ## 📁 Project Structure
 
 ```
