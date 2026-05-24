@@ -40,29 +40,52 @@ Auto Messeger/
 
 ### Step 1: Download ChromeDriver (IMPORTANT!)
 
-1. Check your Chrome version:
-   - Open Chrome → Menu (⋮) → Settings → About Chrome
-   - Note your version number
+**⚠️ CRITICAL:** ChromeDriver version must match your Chrome browser version exactly!
 
-2. Download ChromeDriver:
-   - Visit: https://chromedriver.chromium.org/downloads
-   - Download matching version for your OS
-   - Extract the executable
+1. **Check your Chrome version:**
+   - Open Chrome → Menu (⋮) → **About Google Chrome**
+   - Note your version number (e.g., 149.0.7827.22)
 
-3. Add to PATH or place in project folder:
-   ```bash
-   # Option A: Add to PATH (recommended)
-   # Follow your OS guide: https://chromedriver.chromium.org/getting-started
+2. **Download ChromeDriver for your version:**
    
-   # Option B: Copy to project folder
-   # Copy chromedriver.exe to: d:\Auto Messeger\
+   **For Chrome 149.0.7827.22 (Windows 64-bit):**
    ```
+   https://storage.googleapis.com/chrome-for-testing-public/149.0.7827.22/win64/chromedriver-win64.zip
+   ```
+   
+   **For other versions:**
+   Replace `149.0.7827.22` with your Chrome version in the URL:
+   ```
+   https://storage.googleapis.com/chrome-for-testing-public/[YOUR-CHROME-VERSION]/win64/chromedriver-win64.zip
+   ```
+   
+   **Or manually:**
+   - Go to: https://googlechromelabs.github.io/chrome-for-testing/
+   - Find your Chrome version
+   - Download the matching ChromeDriver for your OS
+   - Extract the `.zip` file
 
-4. Verify setup:
+3. **Place ChromeDriver - Choose one option:**
+   
+   **Option A: Copy to project folder (Easiest):**
+   ```bash
+   # Extract chromedriver.exe from the zip
+   # Copy it to the project root folder:
+   d:\Auto Messeger\chromedriver.exe
+   ```
+   
+   **Option B: Add to System PATH (Recommended for multiple projects):**
+   - Extract the `chromedriver.exe` file
+   - Add the folder containing it to your Windows PATH environment variable
+   - [Windows PATH Setup Guide](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/)
+
+4. **Verify installation:**
    ```bash
    cd "d:\Auto Messeger"
    ".venv\Scripts\python.exe" check_chromedriver.py
    ```
+   
+   ✅ If successful, you'll see: `ChromeDriver found and working!`
 
 ### Step 2: Run the Application
 

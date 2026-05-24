@@ -43,9 +43,26 @@ cd "d:\Auto Messeger"
 ```
 
 3. Download ChromeDriver:
-   - Visit: https://chromedriver.chromium.org/
-   - Download the version matching your Chrome browser version
-   - Add it to your PATH or place it in the project directory
+   
+   **For Chrome 149.0.7827.22 (Windows 64-bit):**
+   ```
+   https://storage.googleapis.com/chrome-for-testing-public/149.0.7827.22/win64/chromedriver-win64.zip
+   ```
+   
+   **For other versions:**
+   Replace `149.0.7827.22` with your Chrome version:
+   ```
+   https://storage.googleapis.com/chrome-for-testing-public/[YOUR-CHROME-VERSION]/win64/chromedriver-win64.zip
+   ```
+   
+   **Then choose one option:**
+   - **Option A:** Copy `chromedriver.exe` to project directory: `d:\Auto Messeger\`
+   - **Option B:** Add ChromeDriver folder to Windows PATH environment variable
+   
+   **Verify the setup:**
+   ```bash
+   "d:/Auto Messeger/.venv/Scripts/python.exe" check_chromedriver.py
+   ```
 
 ## Usage
 
