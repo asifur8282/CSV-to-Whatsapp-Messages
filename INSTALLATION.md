@@ -6,7 +6,9 @@
 Auto Messeger/
 ├── .venv/                      # Python 3.14 Virtual Environment (Created)
 ├── .gitignore                  # Git ignore file
-├── main.py                     # ⭐ Entry point - Run this file
+├── main.py                     # CLI entry point
+├── gui.py                      # ⭐ Tkinter GUI - Run this file for the desktop interface
+├── gui.bat                     # ⭐ Windows launcher to double-click and run the GUI
 ├── requirements.txt            # Package dependencies
 ├── check_chromedriver.py       # Helper to verify ChromeDriver setup
 ├── setup.bat                   # Windows setup script
@@ -87,18 +89,35 @@ Auto Messeger/
 
 ### Step 2: Run the Application
 
-**Windows:**
-```bash
-cd "d:\Auto Messeger"
-".venv\Scripts\python.exe" main.py
-```
+You can automate messages using either the **Graphical User Interface (GUI)** or the command-line **CLI**.
 
-**macOS/Linux:**
-```bash
-cd "d:/Auto Messeger"
-source .venv/bin/activate
-python main.py
-```
+#### A. Run the Graphical User Interface (GUI) - Recommended
+*Note: The GUI supports file browsing, Excel sheet/column auto-selection, live logging, and execution control.*
+
+- **On Windows:** Double-click the `gui.bat` launcher file inside the project folder, or run:
+  ```bash
+  cd "d:\Auto Messeger"
+  ".venv\Scripts\python.exe" gui.py
+  ```
+- **On macOS/Linux:**
+  ```bash
+  cd "d:/Auto Messeger"
+  source .venv/bin/activate
+  python gui.py
+  ```
+
+#### B. Run the Command Line Interface (CLI)
+- **On Windows:**
+  ```bash
+  cd "d:\Auto Messeger"
+  ".venv\Scripts\python.exe" main.py
+  ```
+- **On macOS/Linux:**
+  ```bash
+  cd "d:/Auto Messeger"
+  source .venv/bin/activate
+  python main.py
+  ```
 
 ## 📖 Documentation
 
@@ -143,6 +162,17 @@ Answer "yes" to file input
 → Enter message
 → Scan QR code
 → Messages send automatically!
+
+### Option 4: Graphical User Interface (GUI) - Recommended
+```
+Double-click 'gui.bat' to launch the modern desktop app.
+→ Select "Excel / CSV Spreadsheet" or "Manual Numbers List"
+→ For files, browse and load file (auto-detects sheet and column headers)
+→ For manual list, add phone numbers with instant validation
+→ Write your message (monitored by character counter)
+→ Click "Start Automating" and scan QR code in the browser window
+→ Monitor progress, logs, or stop execution anytime!
+```
 ```
 
 ## 📱 Phone Number Format
@@ -225,8 +255,10 @@ If issues persist, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ## 📝 Files Overview
 
-### Main Entry Point
-- [main.py](main.py) - Orchestrates the application
+### Main Entry Points
+- [gui.py](gui.py) - Main GUI implementation (Tkinter desktop app)
+- [gui.bat](gui.bat) - Easy Windows desktop launcher for the GUI
+- [main.py](main.py) - Interactive CLI command-line entry point
 
 ### Source Modules
 - [src/user_input.py](src/user_input.py) - Handles all user interactions

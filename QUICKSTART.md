@@ -58,20 +58,49 @@ python check_chromedriver.py
 
 ## Step 3: Run the Application
 
-### Windows:
-```bash
-.venv\Scripts\python.exe main.py
-```
+You can use either the **Graphical User Interface (GUI)** or the command-line **CLI**.
 
-### macOS/Linux:
-```bash
-source .venv/bin/activate
-python main.py
-```
+### Option A: Running the GUI (Recommended)
+
+- **On Windows:** Double-click the `gui.bat` launcher file in the project folder, or run:
+  ```bash
+  .venv\Scripts\python.exe gui.py
+  ```
+- **On macOS/Linux:**
+  ```bash
+  source .venv/bin/activate
+  python gui.py
+  ```
+
+### Option B: Running the CLI
+
+- **On Windows:**
+  ```bash
+  .venv\Scripts\python.exe main.py
+  ```
+- **On macOS/Linux:**
+  ```bash
+  source .venv/bin/activate
+  python main.py
+  ```
 
 ## Step 4: Choose Your Method
 
-### Method 1: Manual Number Entry (Simplest)
+### Method 0: Graphical User Interface (GUI) - *Recommended*
+
+The GUI is the easiest and most user-friendly way to use the application. Simply run it via Option A above.
+
+1. **Select Input Mode:** Toggle between **Excel / CSV Spreadsheet** or **Manual Numbers List** using the radio buttons.
+2. **Setup Recipients:**
+   - **For Excel/CSV:** Click **Browse File** to select your sheet. The sheet name and phone column will be automatically loaded and detected.
+   - **For Manual:** Enter the country code and number, then click **Add** to populate your recipient list.
+3. **Compose Message:** Type your message in the text box.
+4. **Automate:** Click **Start Automating**. Once the browser opens, scan the WhatsApp Web QR code to start sending.
+5. **Control:** Click **Stop / Close Browser** at any time if you need to abort the sending process.
+
+---
+
+### Method 1: Manual Number Entry (Simplest CLI)
 
 ```
 ❓ Do you have an Excel or CSV file? (yes/no): no
