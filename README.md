@@ -24,6 +24,15 @@ A Python-based automation tool to send messages to multiple recipients via Whats
   - Real-time progress tracking
   - Detailed success/failure summary
 
+- **Modern Desktop GUI (Optional):**
+  - Sleek dark theme interface (Slate & Emerald colors).
+  - Tabbed design to switch between Spreadsheet and Manual entry.
+  - Automatically loads Excel sheets and auto-selects matching phone columns.
+  - Interactive table to add, review, and delete manual numbers.
+  - Real-time visual progress bar, status messages, and built-in console logs.
+  - Action buttons to start, stop, or safely close Chrome driver instances.
+  - Safety alerts when attempting runs larger than 30 contacts.
+
 ## Requirements
 
 - Python 3.14+
@@ -65,6 +74,33 @@ cd "d:\Auto Messeger"
    ```
 
 ## Usage
+
+The entire messaging automation process can either be performed using the visual **Graphical User Interface (GUI)** or the interactive **Command Line Interface (CLI)**.
+
+### 1. Using the Graphical User Interface (GUI) - Recommended
+
+The desktop application provides an intuitive, graphical interface for configuring files, writing messages, and monitoring execution status.
+
+![WhatsApp AutoMessenger GUI](gui_screenshot.png)
+
+#### Launching the GUI:
+- **On Windows:** Double-click the `gui.bat` launcher file in the project directory.
+- **Via Terminal:** Run the GUI script using the virtual environment:
+  ```bash
+  "d:/Auto Messeger/.venv/Scripts/python.exe" gui.py
+  ```
+
+#### Steps to Use:
+1. Select your preferred input mode: **Excel / CSV Spreadsheet** or **Manual Numbers List**.
+2. **Spreadsheet mode:** Browse to select your file. Select the target sheet name and verify the phone number column (auto-selected if a match is found).
+3. **Manual mode:** Enter the country code (e.g. `91`) and the number, then click **Add** (or press Enter). You can review or delete recipients from the visual list.
+4. Compose your message in the text area (monitored by a character counter).
+5. Click **Start Automating** to launch Chrome. Scan the QR code when requested.
+6. The app will send messages and update you in real-time. Click **Stop / Close Browser** at any time to abort safely.
+
+---
+
+### 2. Using the Command Line Interface (CLI)
 
 Run the main script:
 ```bash
@@ -136,8 +172,11 @@ Number       | Name
 ```
 Auto Messeger/
 ├── main.py                 # Entry point
+├── gui.py                  # Tkinter GUI interface
+├── gui.bat                 # Windows GUI double-click launcher
 ├── requirements.txt        # Package dependencies
 ├── README.md              # This file
+├── gui_screenshot.png      # GUI interface screenshot
 └── src/
     ├── __init__.py
     ├── user_input.py      # User input handling
