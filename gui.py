@@ -103,6 +103,9 @@ class AutoMessengerGUI(tk.Tk):
         self.manual_phone_var = tk.StringVar()
         self.manual_numbers = [] # list of collected phone numbers
         
+        self.min_delay_var = tk.IntVar(value=5)
+        self.max_delay_var = tk.IntVar(value=20)
+        
         # Configure overall style
         self.setup_styles()
         
@@ -365,6 +368,70 @@ class AutoMessengerGUI(tk.Tk):
         actions_title = ttk.Label(actions_card, text="Execution Controls", style="Header.TLabel")
         actions_title.pack(anchor="w", pady=(0, 10))
         
+        # Pacing / Delay Slider controls
+        delay_frame = ttk.Frame(actions_card, style="Card.TFrame")
+        delay_frame.pack(fill="x", pady=(0, 15))
+        
+        delay_header = ttk.Frame(delay_frame, style="Card.TFrame")
+        delay_header.pack(fill="x", pady=(0, 5))
+        
+        delay_lbl = ttk.Label(delay_header, text="Pacing Delay Range (Seconds)", font=(self.font_family, 10, "bold"), foreground=ACCENT_COLOR)
+        delay_lbl.pack(side="left")
+        
+        self.delay_value_lbl = ttk.Label(delay_header, text=f"Random {self.min_delay_var.get()}s - {self.max_delay_var.get()}s", font=(self.font_family, 9, "italic"), foreground=TEXT_MUTED)
+        self.delay_value_lbl.pack(side="right")
+        
+        sliders_row = ttk.Frame(delay_frame, style="Card.TFrame")
+        sliders_row.pack(fill="x", pady=5)
+        
+        # Min Slider
+        min_frame = ttk.Frame(sliders_row, style="Card.TFrame")
+        min_frame.pack(side="left", fill="x", expand=True, padx=(0, 10))
+        
+        min_lbl = ttk.Label(min_frame, text="Min Delay:", style="Card.TLabel", font=(self.font_family, 9))
+        min_lbl.pack(anchor="w")
+        
+        self.min_scale = tk.Scale(
+            min_frame, 
+            from_=1, 
+            to=60, 
+            orient="horizontal", 
+            variable=self.min_delay_var,
+            bg=CARD_BG, 
+            fg=TEXT_COLOR, 
+            troughcolor=BG_COLOR, 
+            activebackground=ACCENT_COLOR,
+            highlightthickness=0, 
+            bd=0,
+            font=(self.font_family, 8),
+            command=self.on_min_delay_change
+        )
+        self.min_scale.pack(fill="x")
+        
+        # Max Slider
+        max_frame = ttk.Frame(sliders_row, style="Card.TFrame")
+        max_frame.pack(side="right", fill="x", expand=True, padx=(10, 0))
+        
+        max_lbl = ttk.Label(max_frame, text="Max Delay:", style="Card.TLabel", font=(self.font_family, 9))
+        max_lbl.pack(anchor="w")
+        
+        self.max_scale = tk.Scale(
+            max_frame, 
+            from_=1, 
+            to=60, 
+            orient="horizontal", 
+            variable=self.max_delay_var,
+            bg=CARD_BG, 
+            fg=TEXT_COLOR, 
+            troughcolor=BG_COLOR, 
+            activebackground=ACCENT_COLOR,
+            highlightthickness=0, 
+            bd=0,
+            font=(self.font_family, 8),
+            command=self.on_max_delay_change
+        )
+        self.max_scale.pack(fill="x")
+        
         btn_row = ttk.Frame(actions_card, style="Card.TFrame")
         btn_row.pack(fill="x", pady=5)
         
@@ -539,6 +606,30 @@ class AutoMessengerGUI(tk.Tk):
     def update_list_count(self):
         """Update count label for manual numbers list."""
         self.list_count_lbl.config(text=f"Total Recipients: {len(self.manual_numbers)}")
+
+    def on_min_delay_change(self, value):
+        """Callback when Min slider is moved; pushes Max up if Min exceeds Max."""
+        try:
+            min_val = int(float(value))
+            max_val = self.max_delay_var.get()
+            if min_val > max_val:
+                self.max_delay_var.set(min_val)
+                max_val = min_val
+            self.delay_value_lbl.config(text=f"Random {min_val}s - {max_val}s")
+        except Exception:
+            pass
+
+    def on_max_delay_change(self, value):
+        """Callback when Max slider is moved; pulls Min down if Max goes below Min."""
+        try:
+            min_val = self.min_delay_var.get()
+            max_val = int(float(value))
+            if max_val < min_val:
+                self.min_delay_var.set(max_val)
+                min_val = max_val
+            self.delay_value_lbl.config(text=f"Random {min_val}s - {max_val}s")
+        except Exception:
+            pass
 
     def update_char_count(self, event=None):
         """Update live character count label for message compose."""
@@ -751,18 +842,18 @@ class AutoMessengerGUI(tk.Tk):
         # Start Thread
         self.automation_thread = threading.Thread(
             target=self.run_automation_loop,
-            args=(recipients, message),
+            args=(recipients, message, self.min_delay_var.get(), self.max_delay_var.get()),
             daemon=True
         )
         self.automation_thread.start()
 
-    def run_automation_loop(self, recipients, message):
+    def run_automation_loop(self, recipients, message, min_delay, max_delay):
         """Worker thread entry point."""
         # Use RedirectStdout context manager to capture print output from standard library
         with RedirectStdout(self.log_queue):
             try:
                 # Runs the exact CLI sender engine logic
-                self.message_sender.send_messages(recipients, message)
+                self.message_sender.send_messages(recipients, message, min_delay, max_delay)
             except Exception as e:
                 print(f"\n❌ Thread Exception: {str(e)}")
             finally:
