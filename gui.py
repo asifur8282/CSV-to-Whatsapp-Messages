@@ -75,6 +75,9 @@ class AutoMessengerGUI(tk.Tk):
     def __init__(self):
         super().__init__()
         
+        # Detect and select the best premium font (Google Sans / Outfit / Segoe UI)
+        self.font_family = self.detect_font_family()
+        
         self.title("WhatsApp AutoMessenger")
         self.geometry("1000x780")
         self.configure(bg=BG_COLOR)
@@ -112,6 +115,50 @@ class AutoMessengerGUI(tk.Tk):
         # Bind window close event
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    def detect_font_family(self):
+        """Attempts to find the most premium font available or loads a custom one."""
+        import tkinter.font as tkfont
+        
+        # Setup custom fonts folder and attempt to load Outfit if not present
+        font_dir = os.path.join(project_root, "assets", "fonts")
+        os.makedirs(font_dir, exist_ok=True)
+        
+        font_files = {
+            "Outfit-Regular.ttf": "https://github.com/google/fonts/raw/main/ofl/outfit/static/Outfit-Regular.ttf",
+            "Outfit-Bold.ttf": "https://github.com/google/fonts/raw/main/ofl/outfit/static/Outfit-Bold.ttf"
+        }
+        
+        # We try to load locally or download if not present
+        for font_name, url in font_files.items():
+            font_path = os.path.join(font_dir, font_name)
+            if not os.path.exists(font_path):
+                try:
+                    import urllib.request
+                    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(req, timeout=2) as response:
+                        with open(font_path, 'wb') as f:
+                            f.write(response.read())
+                except Exception:
+                    pass
+            
+            if os.path.exists(font_path) and os.name == 'nt':
+                try:
+                    import ctypes
+                    gdi32 = ctypes.WinDLL('gdi32', use_last_error=True)
+                    gdi32.AddFontResourceExW(font_path, 0x10, 0)
+                except Exception:
+                    pass
+
+        try:
+            available = [f.lower() for f in tkfont.families()]
+            preferences = ["google sans", "google sans medium", "outfit", "plus jakarta sans", "segoe ui", "helvetica", "arial"]
+            for p in preferences:
+                if p in available:
+                    return next(f for f in tkfont.families() if f.lower() == p)
+        except Exception:
+            pass
+        return "Segoe UI"
+
     def setup_styles(self):
         """Set up modern theme colors and widget styling using ttk."""
         self.style = ttk.Style()
@@ -123,14 +170,14 @@ class AutoMessengerGUI(tk.Tk):
         self.style.configure("Card.TFrame", background=CARD_BG, borderwidth=1, relief="solid")
         
         # Labels
-        self.style.configure("TLabel", background=BG_COLOR, foreground=TEXT_COLOR, font=("Segoe UI", 10))
-        self.style.configure("Card.TLabel", background=CARD_BG, foreground=TEXT_COLOR, font=("Segoe UI", 10))
-        self.style.configure("Title.TLabel", background=BG_COLOR, foreground=ACCENT_COLOR, font=("Segoe UI", 16, "bold"))
-        self.style.configure("Header.TLabel", background=CARD_BG, foreground=ACCENT_COLOR, font=("Segoe UI", 11, "bold"))
+        self.style.configure("TLabel", background=BG_COLOR, foreground=TEXT_COLOR, font=(self.font_family, 10))
+        self.style.configure("Card.TLabel", background=CARD_BG, foreground=TEXT_COLOR, font=(self.font_family, 10))
+        self.style.configure("Title.TLabel", background=BG_COLOR, foreground=ACCENT_COLOR, font=(self.font_family, 16, "bold"))
+        self.style.configure("Header.TLabel", background=CARD_BG, foreground=ACCENT_COLOR, font=(self.font_family, 11, "bold"))
         
         # Notebook (Tabs)
         self.style.configure("TNotebook", background=BG_COLOR, borderwidth=0)
-        self.style.configure("TNotebook.Tab", background=CARD_BG, foreground=TEXT_MUTED, font=("Segoe UI", 10, "bold"), padding=[15, 5])
+        self.style.configure("TNotebook.Tab", background=CARD_BG, foreground=TEXT_MUTED, font=(self.font_family, 10, "bold"), padding=[15, 5])
         self.style.map("TNotebook.Tab",
             background=[("selected", ACCENT_COLOR)],
             foreground=[("selected", BG_COLOR)]
@@ -140,14 +187,14 @@ class AutoMessengerGUI(tk.Tk):
         self.style.configure("TCombobox", fieldbackground=BG_COLOR, background=CARD_BG, foreground=TEXT_COLOR, arrowcolor=TEXT_COLOR)
         
         # Checkbutton
-        self.style.configure("TCheckbutton", background=CARD_BG, foreground=TEXT_COLOR, font=("Segoe UI", 10))
+        self.style.configure("TCheckbutton", background=CARD_BG, foreground=TEXT_COLOR, font=(self.font_family, 10))
         self.style.map("TCheckbutton",
             background=[("active", CARD_BG)],
             foreground=[("active", TEXT_COLOR)]
         )
         
         # Radiobutton
-        self.style.configure("TRadiobutton", background=CARD_BG, foreground=TEXT_COLOR, font=("Segoe UI", 10))
+        self.style.configure("TRadiobutton", background=CARD_BG, foreground=TEXT_COLOR, font=(self.font_family, 10))
         self.style.map("TRadiobutton",
             background=[("active", CARD_BG)],
             foreground=[("active", TEXT_COLOR)]
@@ -161,7 +208,7 @@ class AutoMessengerGUI(tk.Tk):
         title_lbl = ttk.Label(header_frame, text="🚀 WhatsApp AutoMessenger", style="Title.TLabel")
         title_lbl.pack(side="left")
         
-        subtitle_lbl = ttk.Label(header_frame, text="Desktop Automation Tool", font=("Segoe UI", 10, "italic"), foreground=TEXT_MUTED)
+        subtitle_lbl = ttk.Label(header_frame, text="Desktop Automation Tool", font=(self.font_family, 10, "italic"), foreground=TEXT_MUTED)
         subtitle_lbl.pack(side="left", padx=10, pady=5)
         
         # Main Split Container
@@ -208,10 +255,10 @@ class AutoMessengerGUI(tk.Tk):
         file_row = ttk.Frame(self.file_card, style="Card.TFrame")
         file_row.pack(fill="x", pady=5)
         
-        self.file_path_entry = tk.Entry(file_row, textvariable=self.file_path_var, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=("Segoe UI", 10))
+        self.file_path_entry = tk.Entry(file_row, textvariable=self.file_path_var, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=(self.font_family, 10))
         self.file_path_entry.pack(side="left", fill="x", expand=True, padx=(0, 10), ipady=4)
         
-        browse_btn = tk.Button(file_row, text="Browse File", bg=ACCENT_COLOR, fg=BG_COLOR, activebackground=ACCENT_HOVER, activeforeground=BG_COLOR, font=("Segoe UI", 9, "bold"), relief="flat", cursor="hand2", padx=10, command=self.browse_file)
+        browse_btn = tk.Button(file_row, text="Browse File", bg=ACCENT_COLOR, fg=BG_COLOR, activebackground=ACCENT_HOVER, activeforeground=BG_COLOR, font=(self.font_family, 9, "bold"), relief="flat", cursor="hand2", padx=10, command=self.browse_file)
         browse_btn.pack(side="right")
         
         # Spreadsheet Parsing Options (comboboxes populated dynamically)
@@ -240,7 +287,7 @@ class AutoMessengerGUI(tk.Tk):
         limit_chk = ttk.Checkbutton(limit_row, text="Limit number of contacts to send to", variable=self.limit_rows_var, command=self.toggle_limit_entry)
         limit_chk.pack(side="left")
         
-        self.limit_entry = tk.Entry(limit_row, textvariable=self.limit_value_var, width=6, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, state="disabled", font=("Segoe UI", 10), justify="center")
+        self.limit_entry = tk.Entry(limit_row, textvariable=self.limit_value_var, width=6, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, state="disabled", font=(self.font_family, 10), justify="center")
         self.limit_entry.pack(side="left", padx=10, ipady=2)
         
         # 2b. Manual Mode Card
@@ -256,17 +303,17 @@ class AutoMessengerGUI(tk.Tk):
         cc_lbl = ttk.Label(entry_row, text="Country Code:", style="Card.TLabel")
         cc_lbl.pack(side="left", padx=(0, 5))
         
-        cc_entry = tk.Entry(entry_row, textvariable=self.manual_country_var, width=5, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=("Segoe UI", 10), justify="center")
+        cc_entry = tk.Entry(entry_row, textvariable=self.manual_country_var, width=5, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=(self.font_family, 10), justify="center")
         cc_entry.pack(side="left", padx=(0, 15), ipady=4)
         
         num_lbl = ttk.Label(entry_row, text="Phone Number:", style="Card.TLabel")
         num_lbl.pack(side="left", padx=(0, 5))
         
-        self.num_entry = tk.Entry(entry_row, textvariable=self.manual_phone_var, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=("Segoe UI", 10))
+        self.num_entry = tk.Entry(entry_row, textvariable=self.manual_phone_var, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, relief="flat", highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=(self.font_family, 10))
         self.num_entry.pack(side="left", fill="x", expand=True, padx=(0, 10), ipady=4)
         self.num_entry.bind("<Return>", lambda e: self.add_manual_number())
         
-        add_btn = tk.Button(entry_row, text="Add", bg=ACCENT_COLOR, fg=BG_COLOR, activebackground=ACCENT_HOVER, activeforeground=BG_COLOR, font=("Segoe UI", 9, "bold"), relief="flat", cursor="hand2", padx=15, command=self.add_manual_number)
+        add_btn = tk.Button(entry_row, text="Add", bg=ACCENT_COLOR, fg=BG_COLOR, activebackground=ACCENT_HOVER, activeforeground=BG_COLOR, font=(self.font_family, 9, "bold"), relief="flat", cursor="hand2", padx=15, command=self.add_manual_number)
         add_btn.pack(side="right")
         
         # List of added numbers
@@ -286,7 +333,7 @@ class AutoMessengerGUI(tk.Tk):
         self.list_count_lbl = ttk.Label(list_buttons, text="Total Recipients: 0", style="Card.TLabel", foreground=TEXT_MUTED)
         self.list_count_lbl.pack(side="left")
         
-        remove_btn = tk.Button(list_buttons, text="Remove Selected", bg=RED_COLOR, fg=TEXT_COLOR, activebackground=RED_HOVER, activeforeground=TEXT_COLOR, font=("Segoe UI", 8, "bold"), relief="flat", cursor="hand2", padx=10, command=self.remove_manual_number)
+        remove_btn = tk.Button(list_buttons, text="Remove Selected", bg=RED_COLOR, fg=TEXT_COLOR, activebackground=RED_HOVER, activeforeground=TEXT_COLOR, font=(self.font_family, 8, "bold"), relief="flat", cursor="hand2", padx=10, command=self.remove_manual_number)
         remove_btn.pack(side="right")
         
         # Pack the default card
@@ -305,7 +352,7 @@ class AutoMessengerGUI(tk.Tk):
         self.char_count_lbl = ttk.Label(msg_header, text="Characters: 0/4096", style="Card.TLabel", foreground=TEXT_MUTED)
         self.char_count_lbl.pack(side="right")
         
-        self.msg_text = scrolledtext.ScrolledText(msg_card, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, borderwidth=0, highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=("Segoe UI", 10), wrap="word", height=8)
+        self.msg_text = scrolledtext.ScrolledText(msg_card, bg=BG_COLOR, fg=TEXT_COLOR, insertbackground=TEXT_COLOR, borderwidth=0, highlightthickness=1, highlightbackground=BORDER_COLOR, highlightcolor=ACCENT_COLOR, font=(self.font_family, 10), wrap="word", height=8)
         self.msg_text.pack(fill="both", expand=True)
         self.msg_text.bind("<KeyRelease>", self.update_char_count)
         
@@ -321,10 +368,10 @@ class AutoMessengerGUI(tk.Tk):
         btn_row = ttk.Frame(actions_card, style="Card.TFrame")
         btn_row.pack(fill="x", pady=5)
         
-        self.start_btn = tk.Button(btn_row, text="Start Automating", bg=ACCENT_COLOR, fg=BG_COLOR, activebackground=ACCENT_HOVER, activeforeground=BG_COLOR, font=("Segoe UI", 11, "bold"), relief="flat", cursor="hand2", padx=20, pady=8, command=self.start_automation)
+        self.start_btn = tk.Button(btn_row, text="Start Automating", bg=ACCENT_COLOR, fg=BG_COLOR, activebackground=ACCENT_HOVER, activeforeground=BG_COLOR, font=(self.font_family, 11, "bold"), relief="flat", cursor="hand2", padx=20, pady=8, command=self.start_automation)
         self.start_btn.pack(side="left", fill="x", expand=True, padx=(0, 10))
         
-        self.stop_btn = tk.Button(btn_row, text="Stop / Close Browser", bg=RED_COLOR, fg=TEXT_COLOR, activebackground=RED_HOVER, activeforeground=TEXT_COLOR, font=("Segoe UI", 11, "bold"), relief="flat", state="disabled", cursor="hand2", padx=20, pady=8, command=self.stop_automation)
+        self.stop_btn = tk.Button(btn_row, text="Stop / Close Browser", bg=RED_COLOR, fg=TEXT_COLOR, activebackground=RED_HOVER, activeforeground=TEXT_COLOR, font=(self.font_family, 11, "bold"), relief="flat", state="disabled", cursor="hand2", padx=20, pady=8, command=self.stop_automation)
         self.stop_btn.pack(side="right", fill="x", expand=True, padx=(10, 0))
         
         progress_row = ttk.Frame(actions_card, style="Card.TFrame")
