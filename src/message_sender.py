@@ -16,13 +16,15 @@ class MessageSender:
         self.successful_sends = 0
         self.failed_sends = 0
     
-    def send_messages(self, recipients: list, message: str) -> None:
+    def send_messages(self, recipients: list, message: str, min_delay: int = 5, max_delay: int = 20) -> None:
         """
-        Send messages to multiple recipients
-        
+        Send messages to multiple recipients.
+
         Args:
             recipients: List of phone numbers
             message: The message to send
+            min_delay: Minimum delay between sends in seconds
+            max_delay: Maximum delay between sends in seconds
         """
         # Reset counters for the current batch
         self.successful_sends = 0
@@ -64,7 +66,7 @@ class MessageSender:
                 
                 # Wait between messages to avoid rate limiting
                 if index < total:
-                    delay = random.randint(10, 20)
+                    delay = random.randint(max(0, min_delay), max(0, max_delay))
                     print(f"⏳ Waiting for {delay} seconds before the next message to mimic human behavior...")
                     time.sleep(delay)
             
