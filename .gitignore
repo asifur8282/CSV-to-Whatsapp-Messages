@@ -41,6 +41,7 @@ chromedriver.exe
 config.ini
 *.xlsx
 *.csv
+/tests/
 
 # Logs
 *.log
